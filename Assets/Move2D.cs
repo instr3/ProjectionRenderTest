@@ -9,6 +9,7 @@ public class Move2D : MonoBehaviour,IDragHandler,IPointerDownHandler,IPointerUpH
     public bool IsDebugMode;
     List<DebugPoint> debugPoints = new List<DebugPoint>();
     Queue<DebugPoint> debugPointCachePool = new Queue<DebugPoint>();
+    float relativeCircleSize = 0.08f;
     float dragingMultiplier = 0.1f;
     float dragingClamp = 5f;
     float velocityClamp = 10f;
@@ -23,6 +24,7 @@ public class Move2D : MonoBehaviour,IDragHandler,IPointerDownHandler,IPointerUpH
     int subdividedRays = 32;
     // Use this for initialization
     void Start () {
+        GetComponent<RectTransform>().sizeDelta = new Vector2(Screen.width, Screen.width)* relativeCircleSize;
         canvas = GetComponentInParent<Canvas>();
         radius = GetComponent<RectTransform>().rect.width / 2;
         velocity = Vector2.zero;
@@ -32,6 +34,7 @@ public class Move2D : MonoBehaviour,IDragHandler,IPointerDownHandler,IPointerUpH
     // Update is called once per frame
     void Update ()
     {
+        
     }
     private void FixedUpdate()
     {
