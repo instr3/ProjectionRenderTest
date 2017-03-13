@@ -8,6 +8,7 @@ public class Move2D : MonoBehaviour,IDragHandler,IPointerDownHandler,IPointerUpH
     public DebugPoint DebugPointPrefab;
     public bool IsDebugMode;
     List<DebugPoint> debugPoints = new List<DebugPoint>();
+    Queue<DebugPoint> debugPointCachePool = new Queue<DebugPoint>();
     float dragingMultiplier = 0.1f;
     float dragingClamp = 5f;
     float velocityClamp = 10f;
@@ -74,7 +75,8 @@ public class Move2D : MonoBehaviour,IDragHandler,IPointerDownHandler,IPointerUpH
     {
         foreach (DebugPoint p in debugPoints)
         {
-            Destroy(p.gameObject);
+            p.gameObject.SetActive(false);
+            debugPointCachePool.Enqueue(p);
         }
         debugPoints.Clear();
     }
@@ -97,19 +99,22 @@ public class Move2D : MonoBehaviour,IDragHandler,IPointerDownHandler,IPointerUpH
             DrawDebugPointAt(source, result ? Color.green : Color.red);
         return result;
     }
-    public void DrawDebugPointAt(Vector2 vec)
-    {
-        if (IsDebugMode)
-        {
-            DebugPoint result = Instantiate(DebugPointPrefab, vec, Quaternion.identity, canvas.transform) as DebugPoint;
-            debugPoints.Add(result);
-        }
-    }
     public void DrawDebugPointAt(Vector2 vec,Color color)
     {
         if (IsDebugMode)
         {
-            DebugPoint result = Instantiate(DebugPointPrefab, vec, Quaternion.identity, canvas.transform) as DebugPoint;
+            DebugPoint result;
+            if (debugPointCachePool.Count > 0)
+            {
+                result = debugPointCachePool.Dequeue();
+                result.gameObject.SetActive(true);
+                result.Position = vec;
+            }
+            else
+            {
+                result = Instantiate(DebugPointPrefab, vec, Quaternion.identity) as DebugPoint;
+                result.transform.parent = canvas.transform;
+            }
             result.Color = color;
             debugPoints.Add(result);
         }
