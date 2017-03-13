@@ -116,7 +116,7 @@ public class Move2D : MonoBehaviour,IDragHandler,IPointerDownHandler,IPointerUpH
             else
             {
                 result = Instantiate(DebugPointPrefab, vec, Quaternion.identity) as DebugPoint;
-                result.transform.parent = canvas.transform;
+                result.transform.SetParent(canvas.transform);
             }
             result.Color = color;
             debugPoints.Add(result);
